@@ -20,11 +20,12 @@ function Simple_pagination(){
 
   this.create = object => {
 
-    var format = '<li class="page-item"><button class="page-link"></button></li>';
+    var format = '';
     const container = $(".simple-pagination-div");
     var container_count = container.children().length;
 
-    count_div(container, container_count, object.size);
+    var pages = count_div(container, container_count, object.size);
+    create_pagination_item(pages);
 
     console.log($(".simple-pagination-item"));
 
@@ -35,27 +36,48 @@ function Simple_pagination(){
   //counts and adds a class to each div so it can be hiden and shown
   function count_div(container, container_count, pagination_size){
 
-    console.log(container_count);
-
     var counter = 0;
     var size = pagination_size;
 
     for (var i = 0; i <= container_count; i++) {
 
         container.find("div:eq(" + i + ")").addClass("sp-page-" + (counter + 1));
-        console.log(i);
-        console.log("pag: " + pagination_size);
+
+        if (counter != 0) {
+          // container.find("div:eq(" + i + ")").hide();
+        }
 
         if (i == (pagination_size - 1)) {
-          console.log("enra");
           pagination_size += size;
           counter++;
         }
 
-
-
     }
 
+    return counter + 1;
+
+  }
+
+  function create_pagination_item(pages){
+
+    for (var i = 0; i < pages; i++) {
+      var item = $('<li class="page-item"><button class="page-link">' + (i + 1) + '</button></li>');
+
+      item.insertBefore(".simple-pagination-next");
+
+      if (i == 0) {
+        item.find("button").addClass("sp-selection");
+      }
+    }
+
+  }
+
+  function prev(){
+
+  }
+
+  function next(){
+    
   }
 
   // console.log("hola");
