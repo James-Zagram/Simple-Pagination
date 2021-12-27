@@ -15,6 +15,8 @@ function Simple_pagination(){
   // console.log($(".pagination-div"));
 
   var pagination_item_length = 0;
+  var pagination_div_length = 0;
+  var pagination_pages = 0
 
   this.create = object => {
 
@@ -28,9 +30,15 @@ function Simple_pagination(){
       pagination_item_length = object.show;
     }
 
-    var pages = count_div(container, container_count, object.size);
+    if (object.size == undefined) {
+      pagination_div_length = 4;
+    }else{
+      pagination_div_length = object.size;
+    }
 
-    create_pagination_item(pages, object.show);
+    pagination_pages = count_div(container, container_count, pagination_div_length);
+
+    create_pagination_item(pagination_pages, object.show);
 
     // console.log($(".simple-pagination-item"));
 
@@ -95,21 +103,26 @@ function Simple_pagination(){
     var selection_pos = $(".sp-selection").index();
     var pagination_length = $(".page-item").length - 2;
 
-    if (pagination_item_length > 3) {
+    console.log(pagination_length);
 
+    if (pagination_length < pagination_pages) {
       if (isOdd(pagination_item_length)) {
         console.log(pagination_item_length);
       }else{
         console.log(pagination_item_length);
-
       }
+    }
 
-    }else {
+    if (pagination_item_length == pagination_pages){
       if (direction == true) {
         next(selection_pos);
       }else{
         prev(selection_pos);
       }
+    }
+
+    if (pagination_length > pagination_pages) {
+      console.log("error");
     }
   }
 
