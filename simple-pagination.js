@@ -83,18 +83,38 @@ function Simple_pagination(){
   }
 
   $(".simple-pagination-prev").click(function (){
-    prev();
+    travel_pagination(1, false);
   });
 
   $(".simple-pagination-next").click(function (){
-    next();
+    travel_pagination(1, true);
   });
 
-  // changes the pagination item to the Previous number
-  function prev(){
+  //travels the pagination items
+  function travel_pagination(change_value, direction){
     var selection_pos = $(".sp-selection").index();
-    var pagination_length = $(".page-item").length;
+    var pagination_length = $(".page-item").length - 2;
 
+    if (pagination_item_length > 3) {
+
+      if (isOdd(pagination_item_length)) {
+        console.log(pagination_item_length);
+      }else{
+        console.log(pagination_item_length);
+
+      }
+
+    }else {
+      if (direction == true) {
+        next(selection_pos);
+      }else{
+        prev(selection_pos);
+      }
+    }
+  }
+
+  // changes the pagination item to the Previous number
+  function prev(selection_pos){
     if (selection_pos > 1) {
       $(".page-item:eq(" + selection_pos + ")").find("button").removeClass("sp-selection-style");
       $(".page-item:eq(" + selection_pos + ")").removeClass("sp-selection");
@@ -106,35 +126,19 @@ function Simple_pagination(){
   }
 
   // changes the pagination item to the next number
-  function next(){
-    var selection_pos = $(".sp-selection").index();
-    var pagination_length = $(".page-item").length;
+  function next(selection_pos){
 
-    if (selection_pos < pagination_length - 2) {
-      $(".page-item:eq(" + selection_pos + ")").find("button").removeClass("sp-selection-style");
-      $(".page-item:eq(" + selection_pos + ")").removeClass("sp-selection");
+    if (selection_pos < pagination_item_length) {
+        $(".page-item:eq(" + selection_pos + ")").find("button").removeClass("sp-selection-style");
+        $(".page-item:eq(" + selection_pos + ")").removeClass("sp-selection");
 
-      $(".page-item:eq(" + (selection_pos + 1) + ")").find("button").addClass("sp-selection-style");
-      $(".page-item:eq(" + (selection_pos + 1) + ")").addClass("sp-selection");
-
-      travel_pagination(1);
+        $(".page-item:eq(" + (selection_pos + 1) + ")").find("button").addClass("sp-selection-style");
+        $(".page-item:eq(" + (selection_pos + 1) + ")").addClass("sp-selection");
     }
 
   }
 
-  function travel_pagination(change_value){
-    if (pagination_item_length > 3) {
 
-      if (isOdd(pagination_item_length)) {
-
-      }else{
-
-      }
-
-    }else {
-      return;
-    }
-  }
 
   function isOdd(num) { return num == 2;}
 
