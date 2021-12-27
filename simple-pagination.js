@@ -21,7 +21,12 @@ function Simple_pagination(){
     var format = '';
     const container = $(".simple-pagination-div");
     var container_count = container.children().length;
-    pagination_item_length = object.show;
+
+    if (object.show == undefined) {
+      pagination_item_length = 3;
+    }else{
+      pagination_item_length = object.show;
+    }
 
     var pages = count_div(container, container_count, object.size);
 
@@ -58,6 +63,7 @@ function Simple_pagination(){
 
   }
 
+  // creates the page-items that control the pagination
   function create_pagination_item(pages, pagination_length){
 
     for (var i = 0; i < pages; i++) {
@@ -84,6 +90,7 @@ function Simple_pagination(){
     next();
   });
 
+  // changes the pagination item to the Previous number
   function prev(){
     var selection_pos = $(".sp-selection").index();
     var pagination_length = $(".page-item").length;
@@ -98,6 +105,7 @@ function Simple_pagination(){
     }
   }
 
+  // changes the pagination item to the next number
   function next(){
     var selection_pos = $(".sp-selection").index();
     var pagination_length = $(".page-item").length;
@@ -109,13 +117,26 @@ function Simple_pagination(){
       $(".page-item:eq(" + (selection_pos + 1) + ")").find("button").addClass("sp-selection-style");
       $(".page-item:eq(" + (selection_pos + 1) + ")").addClass("sp-selection");
 
+      travel_pagination(1);
     }
 
   }
 
-  function travel_pagination(){
-    
+  function travel_pagination(change_value){
+    if (pagination_item_length > 3) {
+
+      if (isOdd(pagination_item_length)) {
+
+      }else{
+
+      }
+
+    }else {
+      return;
+    }
   }
+
+  function isOdd(num) { return num == 2;}
 
   // console.log("hola");
 
