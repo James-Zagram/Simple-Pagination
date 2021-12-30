@@ -1,6 +1,6 @@
 /*
  * Simple-Pagination
- * Copyright 2020
+ * Copyright 2022
  * Author: Jaime Zaragoza
  * All Rights Reserved.
  * Use, reproduction, distribution, and modification of this code is subject to the terms and
@@ -17,6 +17,8 @@ function Simple_pagination(){
   var pagination_item_length = 0;
   var pagination_div_length = 0;
   var pagination_pages = 0
+  var front = 0;
+  var back = 0;
 
   this.create = object => {
 
@@ -38,11 +40,13 @@ function Simple_pagination(){
 
     pagination_pages = count_div(container, container_count, pagination_div_length);
 
+    front = pagination_pages - pagination_item_length;
+
     create_pagination_item(pagination_pages, object.show);
 
     // console.log($(".simple-pagination-item"));
 
-    console.log(object.size);
+    // console.log(object.size);
 
   }
 
@@ -98,22 +102,96 @@ function Simple_pagination(){
     travel_pagination(1, true);
   });
 
+
+
   //travels the pagination items
   function travel_pagination(change_value, direction){
     var selection_pos = $(".sp-selection").index();
     var pagination_length = $(".page-item").length - 2;
 
-    console.log(pagination_length);
+    console.log(pagination_item_length);
+    // console.log(pagination_pages);
 
-    if (pagination_length < pagination_pages) {
-      if (isOdd(pagination_item_length)) {
-        console.log(pagination_item_length);
+    console.log("f: " + front);
+    console.log("b: " + back);
+
+    if (pagination_item_length < pagination_pages) {
+
+
+      if (!isOdd(pagination_item_length)) {
+        var center_item = Math.ceil(pagination_item_length / 2);
+        // console.log(center_item);
+        console.log("sel: " + selection_pos);
+
+        if (direction == true) {
+          var future_selection_pos = selection_pos + 1;
+        }else{
+          var future_selection_pos = selection_pos - 1;
+        }
+
+        if (future_selection_pos > center_item) {
+
+          console.log("entra");
+
+          if (front > back) {
+            console.log("entra_1");
+            back++;
+            front--;
+
+            $(".page-item:eq(" + (selection_pos + 2) + ")").css("display", "block");
+            $(".page-item:eq(" + (selection_pos - 1) + ")").css("display", "none");
+            next(selection_pos);
+
+            return;
+          }
+          if (front == back) {
+            console.log("entra_2");
+          }
+          if (front < back) {
+            console.log("entra_3");
+
+            if (direction == true) {
+              next(selection_pos);
+            }else{
+              prev(selection_pos);
+            }
+          }
+
+
+
+        }else{
+
+          if (front > back) {
+            if (direction == true) {
+              next(selection_pos);
+            }else{
+              prev(selection_pos);
+            }
+          }
+          if (front == back) {
+            console.log("entra_2");
+          }
+          if (front < back) {
+            console.log("entra_4");
+            back--;
+            front++;
+            $(".page-item:eq(" + (selection_pos - 2) + ")").css("display", "block");
+            $(".page-item:eq(" + (selection_pos + 1) + ")").css("display", "none");
+            prev(selection_pos);
+          }
+
+
+        }
+        console.log();
       }else{
+        console.log("par");
         console.log(pagination_item_length);
       }
+
     }
 
     if (pagination_item_length == pagination_pages){
+      console.log("odd");
       if (direction == true) {
         next(selection_pos);
       }else{
@@ -141,7 +219,7 @@ function Simple_pagination(){
   // changes the pagination item to the next number
   function next(selection_pos){
 
-    if (selection_pos < pagination_item_length) {
+    if (selection_pos <= pagination_item_length) {
         $(".page-item:eq(" + selection_pos + ")").find("button").removeClass("sp-selection-style");
         $(".page-item:eq(" + selection_pos + ")").removeClass("sp-selection");
 
