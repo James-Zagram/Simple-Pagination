@@ -19,6 +19,7 @@ function Simple_pagination(){
   var pagination_pages = 0
   var front = 0;
   var back = 0;
+  var center_position = false;
 
   this.create = object => {
 
@@ -119,70 +120,71 @@ function Simple_pagination(){
 
 
       if (!isOdd(pagination_item_length)) {
+
+        // console.log("pages: " + pagination_pages );
+        // console.log("position: " + selection_pos);
+
         var center_item = Math.ceil(pagination_item_length / 2);
-        // console.log(center_item);
-        console.log("sel: " + selection_pos);
 
+        // console.log("center: " + center_item);
+        // console.log(center_position);
+
+        //travel to the right
         if (direction == true) {
-          var future_selection_pos = selection_pos + 1;
-        }else{
-          var future_selection_pos = selection_pos - 1;
-        }
 
-        if (future_selection_pos > center_item) {
+          if (center_position == false) {
+            var future_selection_pos = selection_pos + 1;
 
-          console.log("entra");
+            //checks if the travel is going to end on the center of the pagination items
+            if (future_selection_pos == center_item) {
+              center_position = true;
+            }
 
-          if (front > back) {
-            console.log("entra_1");
-            back++;
-            front--;
-
-            $(".page-item:eq(" + (selection_pos + 2) + ")").css("display", "block");
-            $(".page-item:eq(" + (selection_pos - 1) + ")").css("display", "none");
             next(selection_pos);
 
-            return;
-          }
-          if (front == back) {
-            console.log("entra_2");
-          }
-          if (front < back) {
-            console.log("entra_3");
+          }else{
+            front--;
+            back++;
 
-            if (direction == true) {
-              next(selection_pos);
-            }else{
-              prev(selection_pos);
+            if (front == 0) {
+              center_position = false;
             }
+
+            $(".page-item:eq(" + (selection_pos + center_item) + ")").css("display", "block");
+            $(".page-item:eq(" + (selection_pos - (center_item - 1)) + ")").css("display", "none");
+            next(selection_pos);
+                // return;
           }
-
-
 
         }else{
 
-          if (front > back) {
-            if (direction == true) {
-              next(selection_pos);
-            }else{
-              prev(selection_pos);
+          if (center_position == false) {
+            var future_selection_pos = selection_pos - 1;
+
+            //checks if the travel is going to end on the center of the pagination items
+            if (future_selection_pos == pagination_pages - center_item + 1) {
+              center_position = true;
             }
-          }
-          if (front == back) {
-            console.log("entra_2");
-          }
-          if (front < back) {
-            console.log("entra_4");
+
+            prev(selection_pos);
+
+          }else{
             back--;
             front++;
-            $(".page-item:eq(" + (selection_pos - 2) + ")").css("display", "block");
-            $(".page-item:eq(" + (selection_pos + 1) + ")").css("display", "none");
+
+            if(back == 0){
+              center_position = false;
+            }
+
+            $(".page-item:eq(" + (selection_pos - center_item) + ")").css("display", "block");
+            $(".page-item:eq(" + (selection_pos + (center_item - 1)) + ")").css("display", "none");
             prev(selection_pos);
+
           }
 
-
         }
-        console.log();
+
+
       }else{
         console.log("par");
         console.log(pagination_item_length);
@@ -219,7 +221,7 @@ function Simple_pagination(){
   // changes the pagination item to the next number
   function next(selection_pos){
 
-    if (selection_pos <= pagination_item_length) {
+    if (selection_pos < pagination_pages) {
         $(".page-item:eq(" + selection_pos + ")").find("button").removeClass("sp-selection-style");
         $(".page-item:eq(" + selection_pos + ")").removeClass("sp-selection");
 
