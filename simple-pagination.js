@@ -21,6 +21,9 @@ function Simple_pagination(){
   var back = 0;
   var center_position = false;
 
+  var center_position_right = false;
+  var center_position_left = false;
+
   this.create = object => {
 
     //sets class where the pagination is going to happén and the number of items to paginate
@@ -128,16 +131,17 @@ function Simple_pagination(){
     var selection_pos = $(".sp-selection").index();
     var pagination_length = $(".page-item").length - 2;
 
-    console.log(pagination_item_length);
-    console.log(pagination_pages);
+    // console.log(pagination_item_length);
+    // console.log(pagination_pages);
 
+    console.log("------------------------------");
     console.log("f: " + front);
     console.log("b: " + back);
 
     // if (pagination_item_length < pagination_pages) {
 
       //checks if the number of pagination items is odd
-      if (!isOdd(pagination_item_length)) {
+      if (isOdd(pagination_item_length) == 1) {
         //calulates the center of the pagination items based on the number of visible items
         var center_item = Math.ceil(pagination_item_length / 2);
 
@@ -204,24 +208,99 @@ function Simple_pagination(){
 
 
       }else{
-        console.log("par");
-        console.log(pagination_item_length);
+
+        //calulates the center of the pagination items based on the number of visible items
+        var center_item = Math.ceil(pagination_item_length / 2 + 1);
+
+        //travel to the right
+        if (direction == true) {
+
+          //if there is no more items on front, it doesnt move the items.
+          if (front == 0) {
+            center_position = false;
+          }
+
+          //check if position is on the center of the pagination items
+          if (center_position == false) {
+            var future_selection_pos = selection_pos + 1;
+
+            //checks if the travel is going to end on the center of the pagination items
+            if (future_selection_pos == center_item) {
+              center_position = true;
+            }
+
+            //Detects if the user has this condition active, so it can activate the else bellow
+            if (center_position_left == true) {
+              center_position = true;
+              center_position_left = false;
+            }
+
+            //changes focus to the next item
+            next(selection_pos);
+
+          }else{
+            front--;
+            back++;
+
+            //if there is not more items on front, changes center position
+            if (front == 0) {
+              center_position = false;
+            }
+
+            //hides and shows prev and next items
+            $(".page-item:eq(" + (selection_pos + center_item - 1) + ")").css("display", "block");
+            $(".page-item:eq(" + (selection_pos - (center_item - 1)) + ")").css("display", "none");
+            next(selection_pos);
+          }
+
+        }else{  //travel to the left
+
+
+          //if there is no more items on back, it doesnt move the items.
+          if (back == 0) {
+            center_position_left = false;
+          }
+
+          //checks the if the user was traveling left
+          if (center_position_left == false) {
+            var future_selection_pos = selection_pos - 1;
+
+            //checks if the travel was going to the right
+            if (center_position == false) {
+
+              //checks if the user is on the end of the pagination items.
+              if (future_selection_pos == pagination_pages - center_item + 1) {
+                center_position = false;
+                center_position_left = true;
+              }
+            }else{
+              center_position_left = true;
+              center_position = false;
+            }
+
+            //changes focus to the previous item
+            prev(selection_pos);
+
+          }else{
+            back--;
+            front++;
+
+            //if there is not more items on back, changes center position
+            if(back == 0){
+              center_position_left = false;
+            }
+
+            //hides and shows prev and next items
+            $(".page-item:eq(" + (selection_pos - center_item + 1) + ")").css("display", "block");
+            $(".page-item:eq(" + (selection_pos + (center_item - 1)) + ")").css("display", "none");
+            prev(selection_pos);
+
+          }
+
+        }
+
       }
 
-    // }
-    //
-    // if (pagination_item_length == pagination_pages){
-    //   console.log("odd");
-    //   if (direction == true) {
-    //     next(selection_pos);
-    //   }else{
-    //     prev(selection_pos);
-    //   }
-    // }
-    //
-    // if (pagination_length > pagination_pages) {
-    //   console.log("error");
-    // }
   }
 
 
@@ -253,6 +332,6 @@ function Simple_pagination(){
 
 
   //detects if numbre is odd
-  function isOdd(num) { return num == 2;}
+  function isOdd(num) { return num % 2;}
 
 }
