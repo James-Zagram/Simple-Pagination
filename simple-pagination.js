@@ -23,6 +23,10 @@ function Simple_pagination(){
 
   var center_position_right = false;
   var center_position_left = false;
+  var odd_center = 0;
+
+  var travel_increment = 0;
+  var travel_decrement = 0;
 
   this.create = object => {
 
@@ -43,6 +47,9 @@ function Simple_pagination(){
     }else{
       pagination_div_length = object.size;
     }
+
+    odd_center = Math.ceil(pagination_item_length / 2);
+
 
     //detects if there is any errors regarding the calulation of pagination items, and divs to paginate.
     if ( (container_count / pagination_div_length) >= pagination_item_length ) {
@@ -308,12 +315,13 @@ function Simple_pagination(){
 
   // function to move the selection based on the user click on the pagination items
   function change_selection(item_index, item_class){
+    console.log("--------------------------------------");
       console.log("item_index: " + item_index);
+      console.log("f: " + front);
+      console.log("B: " + back);
       console.log("pag: " + pagination_pages);
 
-      //gets the item on the pagination center
-      var center_item = Math.ceil(pagination_item_length / 2);
-      console.log("center: " + center_item);
+      console.log("center: " + odd_center);
 
       //detects if the item clicked is the "next" or "prev" buttons
       if (item_class.indexOf("simple-pagination-next") >= 0 || item_class.indexOf("simple-pagination-prev") >= 0) {
@@ -322,51 +330,94 @@ function Simple_pagination(){
 
         //checks if the length of the items is odd
         if (isOdd(pagination_item_length) == 1) {
+          //calculates the beging and end items.
+          var lateral_items = Math.ceil((pagination_item_length - 1) / 2);
 
           //checks if the item clicked is on the right of the center.
-          if (item_index > center_item) {
+          if (item_index > odd_center) {
+            console.log("entra_mas");
 
             //enters if there is still items hidden
             if (front > 0) {
-              //calculates the "steps" that will be necesary to move the items
-              var travel_increment = item_index - center_item;
+              //calculates the "steps" that will be necesary to move the items based on the current position of the user
+              travel_increment = item_index - odd_center + travel_increment;
+
+              //calculates the real travel distance that can be achieved clicking the items.
+              real_travel = item_index - odd_center;
+
+              //if the click doesnt exceeds the lateral items, calculates the center.
+              if (item_index < (pagination_pages - lateral_items) ) {
+                //recalculates the center of the items.
+                odd_center = item_index;
+              }else{
+                //adds a maximum center value
+                odd_center = pagination_pages - lateral_items;
+              }
 
               //enters if there is more "steps" than items hidden and the steps are changed to the number of items hidden
-              if (front <= travel_increment) {
-                move_items(front, true);
+              if (front >= real_travel) {
+                //changes the value of the tracker for hidden items
+                front = front - real_travel;
+                back = back + real_travel;
+                move_items(true);
               }else{
-                move_items(travel_increment, true);
+                move_items(true);
+                //changes the value of the tracker for hidden items
+                back = back + front;
+                front -= front;
               }
+
             }else{
               selection();
             }
           }
 
           //checks if the click is on the center of the items.
-          if (item_index == center_item) {
+          if (item_index == odd_center) {
             selection();
           }
 
           //check if the item clicked is on the left of the center.
-          if (item_index < center_item){
+          if (item_index < odd_center){
+            console.log("entra_menos");
+            console.log("back: " + back);
 
-            // console.log(back);
-            // console.log("entra");
-            //
-            // //enters if there is still items hidden
-            // if (back > 0) {
-            //   //calculates the "steps" that will be necesary to move the items
-            //   var travel_increment = center_item - item_index;
-            //
-            //   //enters if there is more "steps" than items hidden and the steps are changed to the number of items hidden
-            //   if (back <= travel_increment) {
-            //     move_items(back, false);
-            //   }else{
-            //     move_items(travel_increment, false);
-            //   }
-            // }else{
-            //   selection();
-            // }
+            //enters if there is still items hidden
+            if (back > 0) {
+              //calculates the "steps" that will be necesary to move the items based on the current position of the user
+              travel_decrement = odd_center - item_index + travel_decrement;
+
+              //calculates the real travel distance that can be achieved clicking the items.
+              real_travel = odd_center - item_index;
+              console.log("travel: " + real_travel );
+
+              // //if the click doesnt exceeds the lateral items, calculates the center.
+              if (item_index < (pagination_pages - lateral_items) ) {
+                //recalculates the center of the items.
+                odd_center = item_index;
+              }else{
+                //adds a maximum center value
+                odd_center = pagination_pages - lateral_items;
+              }
+
+              console.log("new center: " + odd_center);
+
+              //enters if there is more "steps" than items hidden and the steps are changed to the number of items hidden
+              if (back >= real_travel) {
+                //changes the value of the tracker for hidden items
+                back = back - real_travel;
+                front = front + real_travel;
+                move_items(false);
+              }else{
+                move_items(false);
+                //changes the value of the tracker for hidden items
+                back -= back;
+                front += front;
+              }
+
+            }else{
+              selection();
+            }
 
           }
 
@@ -377,27 +428,62 @@ function Simple_pagination(){
       }
 
       //hiddes and shows the items according to the parameters given.
-      function move_items(increment, direction){
-        var dynamic_increment = pagination_item_length - center_item;
+      function move_items(direction){
+
+
+
+
         center_position = true;
 
         // enters when the user clicks to the right of the center item.
         if (direction == true) {
+          var dynamic_increment = Math.ceil((pagination_item_length - 1) / 2);
+          var dynamic_decrement = item_index - dynamic_increment;
+
+          //limits the max value for dynamic decrement
+          if (dynamic_decrement > pagination_pages - pagination_item_length) {
+            dynamic_decrement = pagination_pages - pagination_item_length + 1;
+          }
+
+          dynamic_increment = item_index + dynamic_increment + 1
+
+          console.log("mover +");
 
           //hides the items on the left of the clicked item.
-          for (var i = increment; i > 0; i--) {
+          for (var i = 1; i < dynamic_decrement; i++) {
             $(".page-item:eq(" + i + ")").css("display", "none");
           }
 
           //shows the items on the right of the clicked items.
-          for (var i = 0; i < increment; i++) {
-            $(".page-item:eq(" + (item_index + dynamic_increment - i) + ")").css("display", "block");
+          for (var i = item_index; i < dynamic_increment; i++) {
+            $(".page-item:eq(" + i + ")").css("display", "block");
           }
 
         }else{
-          console.log("mover");
+          var dynamic_increment = Math.ceil((pagination_item_length - 1) / 2);
+          var dynamic_decrement = item_index - dynamic_increment - 1;
+
+          // if (dynamic_decrement > pagination_pages - pagination_item_length) {
+          //   dynamic_decrement = pagination_pages - pagination_item_length + 1;
+          // }
+
+          dynamic_increment = item_index + dynamic_increment + 1
+
+          console.log("mover -");
+
+          //hides the items to the right
+          for (var i = dynamic_increment; i < pagination_pages; i++) {
+            $(".page-item:eq(" + i + ")").css("display", "none");
+          }
+
+          //shows the items on the left of the clicked items.
+          for (var i = item_index; i > dynamic_decrement; i--) {
+            $(".page-item:eq(" + i + ")").css("display", "block");
+          }
         }
 
+        console.log("dy+ : " + dynamic_increment);
+        console.log("dy- : " + dynamic_decrement);
 
         selection();
       }
