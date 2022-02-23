@@ -109,6 +109,12 @@ function Simple_pagination(){
       }
     }
 
+    //detects click on the numbers [item]
+    $(".page-item").click(function (){
+      //sends the item index and class
+      change_selection($(this).index(), $(this).attr("class"));
+    });
+
   }
 
   //detects button press [prev]
@@ -123,13 +129,10 @@ function Simple_pagination(){
     travel_pagination(true);
   });
 
-
-
   //travels the pagination items
   function travel_pagination(direction){
     //detecs the position in the items and ignores the prev and next buttons
     var selection_pos = $(".sp-selection").index();
-    var pagination_length = $(".page-item").length - 2;
 
     // console.log(pagination_item_length);
     // console.log(pagination_pages);
@@ -301,6 +304,111 @@ function Simple_pagination(){
 
       }
 
+  }
+
+  // function to move the selection based on the user click on the pagination items
+  function change_selection(item_index, item_class){
+      console.log("item_index: " + item_index);
+      console.log("pag: " + pagination_pages);
+
+      //gets the item on the pagination center
+      var center_item = Math.ceil(pagination_item_length / 2);
+      console.log("center: " + center_item);
+
+      //detects if the item clicked is the "next" or "prev" buttons
+      if (item_class.indexOf("simple-pagination-next") >= 0 || item_class.indexOf("simple-pagination-prev") >= 0) {
+
+      }else{
+
+        //checks if the length of the items is odd
+        if (isOdd(pagination_item_length) == 1) {
+
+          //checks if the item clicked is on the right of the center.
+          if (item_index > center_item) {
+
+            //enters if there is still items hidden
+            if (front > 0) {
+              //calculates the "steps" that will be necesary to move the items
+              var travel_increment = item_index - center_item;
+
+              //enters if there is more "steps" than items hidden and the steps are changed to the number of items hidden
+              if (front <= travel_increment) {
+                move_items(front, true);
+              }else{
+                move_items(travel_increment, true);
+              }
+            }else{
+              selection();
+            }
+          }
+
+          //checks if the click is on the center of the items.
+          if (item_index == center_item) {
+            selection();
+          }
+
+          //check if the item clicked is on the left of the center.
+          if (item_index < center_item){
+
+            // console.log(back);
+            // console.log("entra");
+            //
+            // //enters if there is still items hidden
+            // if (back > 0) {
+            //   //calculates the "steps" that will be necesary to move the items
+            //   var travel_increment = center_item - item_index;
+            //
+            //   //enters if there is more "steps" than items hidden and the steps are changed to the number of items hidden
+            //   if (back <= travel_increment) {
+            //     move_items(back, false);
+            //   }else{
+            //     move_items(travel_increment, false);
+            //   }
+            // }else{
+            //   selection();
+            // }
+
+          }
+
+        }else{
+
+        }
+
+      }
+
+      //hiddes and shows the items according to the parameters given.
+      function move_items(increment, direction){
+        var dynamic_increment = pagination_item_length - center_item;
+        center_position = true;
+
+        // enters when the user clicks to the right of the center item.
+        if (direction == true) {
+
+          //hides the items on the left of the clicked item.
+          for (var i = increment; i > 0; i--) {
+            $(".page-item:eq(" + i + ")").css("display", "none");
+          }
+
+          //shows the items on the right of the clicked items.
+          for (var i = 0; i < increment; i++) {
+            $(".page-item:eq(" + (item_index + dynamic_increment - i) + ")").css("display", "block");
+          }
+
+        }else{
+          console.log("mover");
+        }
+
+
+        selection();
+      }
+
+      function selection(){
+        $(".page-item").find("button").removeClass("sp-selection-style");
+        $(".page-item").removeClass("sp-selection");
+
+        $(".page-item:eq(" + item_index + ")").find("button").addClass("sp-selection-style");
+        $(".page-item:eq(" + item_index + ")").addClass("sp-selection");
+      }
   }
 
 
