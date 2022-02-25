@@ -119,7 +119,12 @@ function Simple_pagination(){
     //detects click on the numbers [item]
     $(".page-item").click(function (){
       //sends the item index and class
-      change_selection($(this).index(), $(this).attr("class"));
+
+      if ($(this).attr("class").indexOf("simple-pagination-next") >= 0 || $(this).attr("class").indexOf("simple-pagination-prev") >= 0) {
+
+      }else{
+        change_selection($(this).index());
+      }
     });
 
   }
@@ -140,13 +145,14 @@ function Simple_pagination(){
   function travel_pagination(direction){
     //detecs the position in the items and ignores the prev and next buttons
     var selection_pos = $(".sp-selection").index();
-
     // console.log(pagination_item_length);
     // console.log(pagination_pages);
 
-    console.log("------------------------------");
-    console.log("f: " + front);
-    console.log("b: " + back);
+    // console.log("------------------------------");
+    // console.log("selec: " + selection_pos);
+    // console.log("f: " + front);
+    // console.log("b: " + back);
+    // console.log("pos: " + center_position);
 
     // if (pagination_item_length < pagination_pages) {
 
@@ -154,6 +160,8 @@ function Simple_pagination(){
       if (isOdd(pagination_item_length) == 1) {
         //calulates the center of the pagination items based on the number of visible items
         var center_item = Math.ceil(pagination_item_length / 2);
+
+        // console.log("center: " + center_item);
 
         //travel to the right
         if (direction == true) {
@@ -166,6 +174,10 @@ function Simple_pagination(){
             if (future_selection_pos == center_item) {
               center_position = true;
             }
+
+            // if (center_position = true) {
+            //   odd_center = selection_pos + 1;
+            // }
 
             //changes focus to the next item
             next(selection_pos);
@@ -314,19 +326,14 @@ function Simple_pagination(){
   }
 
   // function to move the selection based on the user click on the pagination items
-  function change_selection(item_index, item_class){
-    console.log("--------------------------------------");
-      console.log("item_index: " + item_index);
-      console.log("f: " + front);
-      console.log("B: " + back);
-      console.log("pag: " + pagination_pages);
-
-      console.log("center: " + odd_center);
-
-      //detects if the item clicked is the "next" or "prev" buttons
-      if (item_class.indexOf("simple-pagination-next") >= 0 || item_class.indexOf("simple-pagination-prev") >= 0) {
-
-      }else{
+  function change_selection(item_index){
+      // console.log("--------------------------------------");
+      // console.log("item_index: " + item_index);
+      // console.log("f: " + front);
+      // console.log("B: " + back);
+      // console.log("pag: " + pagination_pages);
+      //
+      // console.log("center: " + odd_center);
 
         //checks if the length of the items is odd
         if (isOdd(pagination_item_length) == 1) {
@@ -335,7 +342,9 @@ function Simple_pagination(){
 
           //checks if the item clicked is on the right of the center.
           if (item_index > odd_center) {
-            console.log("entra_mas");
+            // console.log("entra_mas");
+
+
 
             //enters if there is still items hidden
             if (front > 0) {
@@ -379,8 +388,8 @@ function Simple_pagination(){
 
           //check if the item clicked is on the left of the center.
           if (item_index < odd_center){
-            console.log("entra_menos");
-            console.log("back: " + back);
+            // console.log("entra_menos");
+            // console.log("back: " + back);
 
             //enters if there is still items hidden
             if (back > 0) {
@@ -389,7 +398,7 @@ function Simple_pagination(){
 
               //calculates the real travel distance that can be achieved clicking the items.
               real_travel = odd_center - item_index;
-              console.log("travel: " + real_travel );
+              // console.log("travel: " + real_travel );
 
               // //if the click doesnt exceeds the lateral items, calculates the center.
               if (item_index < (pagination_pages - lateral_items) ) {
@@ -400,7 +409,7 @@ function Simple_pagination(){
                 odd_center = pagination_pages - lateral_items;
               }
 
-              console.log("new center: " + odd_center);
+              // console.log("new center: " + odd_center);
 
               //enters if there is more "steps" than items hidden and the steps are changed to the number of items hidden
               if (back >= real_travel) {
@@ -409,10 +418,10 @@ function Simple_pagination(){
                 front = front + real_travel;
                 move_items(false);
               }else{
-                move_items(false);
                 //changes the value of the tracker for hidden items
                 back -= back;
                 front += front;
+                move_items(false);
               }
 
             }else{
@@ -425,15 +434,15 @@ function Simple_pagination(){
 
         }
 
-      }
-
       //hiddes and shows the items according to the parameters given.
       function move_items(direction){
 
-
-
-
-        center_position = true;
+        // if the front or back are out of hidden items, sets the center position.
+        if (front == 0 || back == 0) {
+          center_position = false;
+        }else{
+          center_position = true;
+        }
 
         // enters when the user clicks to the right of the center item.
         if (direction == true) {
@@ -447,7 +456,7 @@ function Simple_pagination(){
 
           dynamic_increment = item_index + dynamic_increment + 1
 
-          console.log("mover +");
+          // console.log("mover +");
 
           //hides the items on the left of the clicked item.
           for (var i = 1; i < dynamic_decrement; i++) {
@@ -467,12 +476,12 @@ function Simple_pagination(){
           //   dynamic_decrement = pagination_pages - pagination_item_length + 1;
           // }
 
-          dynamic_increment = item_index + dynamic_increment + 1
+          dynamic_increment = item_index + dynamic_increment + 1;
 
-          console.log("mover -");
+          // console.log("mover -");
 
           //hides the items to the right
-          for (var i = dynamic_increment; i < pagination_pages; i++) {
+          for (var i = dynamic_increment; i <= pagination_pages; i++) {
             $(".page-item:eq(" + i + ")").css("display", "none");
           }
 
@@ -482,8 +491,8 @@ function Simple_pagination(){
           }
         }
 
-        console.log("dy+ : " + dynamic_increment);
-        console.log("dy- : " + dynamic_decrement);
+        // console.log("dy+ : " + dynamic_increment);
+        // console.log("dy- : " + dynamic_decrement);
 
         selection();
       }
